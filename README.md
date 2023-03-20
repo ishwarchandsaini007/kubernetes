@@ -47,17 +47,17 @@ eksctl get cluster --name First --region ap-south-1
 ```
 
 ## Implement SSL
-1. Objtain SSL certificate
-2. Directly apply the Certificates and update the ingress:- 
+1. Objtain SSL certificate (private.key, certificate.crt)
+2. Convert the SSL certificate into the yaml file:-
+```
+kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml > ssl-apply.yml
+```
+If you do not want to create a yml file for the SSL certificate then you can directly apply the Certificates:- 
 ```
 kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt
 ```
-If you do not want to apply the certificate directly then Convert the SSL into the yaml file:-
-```
-kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml
-```
-3. If you have created the yaml file for the ssl then add the name of the ssl yaml in the kustomization.yaml 
-4. Modify the ingress file and apply the ingress
+
+3. If you have not created the YAML file for the SSL then remove the ssl-apply.yml from the kustomization.yaml file.
 
 ## LoadBalancer
 ```
@@ -128,6 +128,18 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
 ```
+## Implement SSL
+1. Objtain SSL certificate (private.key, certificate.crt)
+2. Convert the SSL certificate into the yaml file:-
+```
+kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml > ssl-apply.yml
+```
+If you do not want to create a yml file for the SSL certificate then you can directly apply the Certificates:- 
+```
+kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt
+```
+
+3. If you have not created the YAML file for the SSL then remove the ssl-apply.yml from the kustomization.yaml file.
 
 ## To Deploy kubernetes Project
 ```
