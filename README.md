@@ -206,3 +206,5 @@ path: /phpmyadmin(/|$)(.*)
 Wordpress:- http://kube.linuxhunter.in
 PhpMyAdmin:- http://kube.linuxhunter.in/phpmyadmin (will not work, / is require at the end of phpmyadmin)
 PhpMyAdmin:- http://kube.linuxhunter.in/phpmyadmin/ (work)
+
+Useful Doc https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm
