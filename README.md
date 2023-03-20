@@ -1,6 +1,6 @@
 # Kubernetes (AWS)
 
-Install Helm:-
+## Install Helm
 ```
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
@@ -8,14 +8,14 @@ chmod 700 get_helm.sh
 helm version --short
 ```
 
-Install Ekctl:-
+## Install Ekctl
 ```
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 ```
 
-Install Kubectl:-
+## Install Kubectl
 ```
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
@@ -23,7 +23,7 @@ mv kubectl /usr/bin/
 kubectl version --client
 ```
 
-Install AwsCli:-
+## Install AwsCli
 ```
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
@@ -31,13 +31,14 @@ sudo ./aws/install
 aws --version
 ```
 
-Create Kubernetes Cluster:- (It will automatically create Kubernetes Cluster and Nodes. It will take around 15 - 20 min to complete)
+## Create Kubernetes Cluster
+It will automatically create Kubernetes Cluster and Nodes. It will take around 15 - 20 min to complete
 ```
 eksctl create cluster --name First --node-type t2.small --nodes 1 --nodes-min 1 --nodes-max 2 --region ap-south-1 --zones=ap-south-1a,ap-south-1b,ap-south-1c
 eksctl get cluster --name First --region ap-south-1
 ```
 
-Connect Kubernetes Cluster on the server:-
+## Connect Kubernetes Cluster on the server
 ```
 aws eks --region ap-south-1 describe-cluster --name First --query cluster.status
 aws eks --region ap-south-1 update-kubeconfig --name First
@@ -45,7 +46,7 @@ kubectl get svc
 eksctl get cluster --name First --region ap-south-1
 ```
 
-Implement SSL:-
+## Implement SSL
 1. Objtain SSL certificate
 2. Directly apply the Certificates and update the ingress:- 
 ```
@@ -57,7 +58,8 @@ kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.c
 ```
 3. If you have created the yaml file for the ssl then add the name of the ssl yaml in the kustomization.yaml 
 4. Modify the ingress file and apply the ingress
-LoadBalancer - 
+
+## LoadBalancer
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
@@ -70,7 +72,8 @@ kubectl --namespace default get services -o wide -w nginx-ingress-ingress-nginx-
 Launch the kubernets as per the requirement.
 Need 2 packages on the server:- doctl and kubectl
 
-For doctl - https://docs.digitalocean.com/reference/doctl/how-to/install/
+## Install doctl
+https://docs.digitalocean.com/reference/doctl/how-to/install/
 ```
 sudo snap install doctl
 sudo snap connect doctl:kube-config
@@ -78,7 +81,7 @@ sudo snap connect doctl:ssh-keys :ssh-keys
 sudo snap connect doctl:dot-docker
 ```
 
-Install Helm:-
+## Install Helm
 ```
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
@@ -86,14 +89,14 @@ chmod 700 get_helm.sh
 helm version --short
 ```
 
-Install Kubectl:-
+## Install Kubectl
 ```
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
 mv kubectl /usr/bin/
 ```
 
-To Configure the kubernetes on the linux server:-
+## To Configure the kubernetes on the linux server
 1. Create the following directories :- 
 ```
 mkdir -p /root/.config /root/.kube
@@ -114,14 +117,14 @@ doctl kubernetes cluster kubeconfig save use_your_cluster_name
 kubectl get nodes
 ```
 
-Load balancer:-
+## Load balancer:-
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
 ```
 
-Note:-
+# Important Note
 1. To run the whole project with one command:- " kubectl apply -k ./ " The above command will execute the kustomization.yaml file.
 2. I have created a NFS with two directories, one is mounted with the MySQL and other is mounted with wordpress with the help of PVC.
 3. If you want the change the NFS, then change the server ip and also create the directories before deploying the project. Access Mode for the NFS must be ReadWriteMany.
@@ -130,7 +133,7 @@ Note:-
     nginx.ingress.kubernetes.io/rewrite-target: "/$2"
     path: /phpmyadmin(/|$)(.*)
 
-Useful Commands:- 
+## Useful Commands
 ```
 kubectl get pods
 kubectl get pods -o wide
@@ -145,7 +148,7 @@ kubectl describe pod wordpress-5c466bfbf7-fb2wj
 kubectl logs wordpress-5c466bfbf7-fb2wj
 ```
 
-Note:- 
+## Remember
 1. Wordpress internal links will only work if the path and the annotations must be same as mentioned.
 
   annotations:
@@ -162,9 +165,6 @@ path: /?(.*
 
 path: /phpmyadmin(/|$)(.*)
 ```
-+++++++++++++
-+ IMPORTANT +
-+++++++++++++
 
 3. If you are using both wordpess and the phpmyadmin then use the following annotations and the path.
 ```
