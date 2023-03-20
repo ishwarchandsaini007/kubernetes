@@ -1,3 +1,79 @@
+AWS:-
+Install Helm:-
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+helm version --short
+
+Install Ekctl:-
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+Install Kubectl:-
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+mv kubectl /usr/bin/
+
+Install AwsCli:-
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+
+Create Kubernetes Cluster:- (It will automatically create Kubernetes Cluster and Nodes. It will take around 15 - 20 min to complete)
+eksctl create cluster --name First --node-type t2.small --nodes 1 --nodes-min 1 --nodes-max 2 --region ap-south-1 --zones=ap-south-1a,ap-south-1b,ap-south-1c
+eksctl get cluster --name First --region ap-south-1
+
+Connect Kubernetes Cluster on the server:-
+aws eks --region ap-south-1 describe-cluster --name First --query cluster.status
+aws eks --region ap-south-1 update-kubeconfig --name First
+kubectl get svc
+eksctl get cluster --name First --region ap-south-1
+
+Implement SSL:-
+1. Objtain SSL certificate
+2. Directly apply the Certificates and update the ingress:- kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt
+   If you do not want to apply the certificate directly then Convert the SSL into the yaml file:- kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml
+3. If you have created the yaml file for the ssl then add the name of the ssl yaml in the kustomization.yaml 
+4. Modify the ingress file and apply the ingress
+LoadBalancer - 
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
+kubectl --namespace default get services -o wide -w nginx-ingress-ingress-nginx-controller
+
+Digitalocean:-
+
+Launch the kubernets as per the requirement.
+Need 2 packages on the server:- doctl and kubectl
+
+For doctl - https://docs.digitalocean.com/reference/doctl/how-to/install/
+For kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+To Configure the kubernetes on the linux server:-
+1. Create the following directories :- 
+mkdir -p /root/.config /root/.kube
+
+2. doctl auth init -  This command will ask for the access token. 
+To generate the access token on Digitalocean visit this link = https://cloud.digitalocean.com/account/api/tokens
+
+3. doctl kubernetes cluster kubeconfig save use_your_cluster_name - To connect to the kubectl with the digitalocean cluster
+doctl kubernetes cluster kubeconfig save k8s-1-25-4-do-0-blr1-1678426669429
+
+4. kubectl get nodes - It will show the nodes which are connected to the kubernetes cluster.
+
+5. snap install helm --classic - To install helm
+
+6. Now launch the Load balancer with the following command:-
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
+
+
+Note:-
 1. To run the whole project with one command:- " kubectl apply -k ./ " The above command will execute the kustomization.yaml file.
 2. I have created a NFS with two directories, one is mounted with the MySQL and other is mounted with wordpress with the help of PVC.
 3. If you want the change the NFS, then change the server ip and also create the directories before deploying the project. Access Mode for the NFS must be ReadWriteMany.
@@ -20,11 +96,7 @@ kubectl describe pod wordpress-5c466bfbf7-fb2wj
 kubectl logs wordpress-5c466bfbf7-fb2wj
 
 Note:- 
-1. If Wordpress installation page will not show then you need to comment this line in the ingress file. 
-#nginx.ingress.kubernetes.io/rewrite-target: "/$2" 
-After installing the wordpress uncomment the line from the ingress otherwise phpmyadmin will not work.
-
-2. Wordpress internal links will only work if the path and the annotations must be same as mentioned.
+1. Wordpress internal links will only work if the path and the annotations must be same as mentioned.
 
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -32,7 +104,7 @@ After installing the wordpress uncomment the line from the ingress otherwise php
 
 path: /?(.*
 
-3. PhpMyAdmin will only work if the path and the annotations must be same as mentioned.
+2. PhpMyAdmin will only work if the path and the annotations must be same as mentioned.
 
 
   annotations:
@@ -45,7 +117,7 @@ path: /phpmyadmin(/|$)(.*)
 + IMPORTANT +
 +++++++++++++
 
-4. If you are using both wordpess and the phpmyadmin then use the following annotations and the path.
+3. If you are using both wordpess and the phpmyadmin then use the following annotations and the path.
 
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -65,9 +137,4 @@ PhpMyAdmin:- http://kube.linuxhunter.in/phpmyadmin (will not work, / is require 
 PhpMyAdmin:- http://kube.linuxhunter.in/phpmyadmin/ (work)
 
 
-FOR SSL:-
-1. Objtain SSL certificate
-2. Directly Apply Certificates and update the ingress:- kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt
-   If you do not want to apply the certificate directly then Convert the SSL into the yaml file:- kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml
-3. If you have created the yaml file for the ssl then add the name of the ssl yaml in the kustomization.yaml 
-4. Modify the ingress file and apply the ingress
+
