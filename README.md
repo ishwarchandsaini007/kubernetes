@@ -52,7 +52,7 @@ eksctl get cluster --name First --region ap-south-1
 ```
 kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml > ssl-apply.yml
 ```
-If you do not want to create a yml file for the SSL certificate then you can directly apply the Certificates:- 
+If you do not want convert the ssl certificates into a YAML file then you can directly apply the Certificates:- 
 ```
 kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt
 ```
@@ -134,7 +134,7 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishS
 ```
 kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt --dry-run=client --output=yaml > ssl-apply.yml
 ```
-If you do not want to create a yml file for the SSL certificate then you can directly apply the Certificates:- 
+If you do not want convert the ssl certificates into a YAML file then you can directly apply the Certificates:- 
 ```
 kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.crt
 ```
