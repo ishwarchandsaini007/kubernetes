@@ -122,13 +122,6 @@ doctl kubernetes cluster kubeconfig save use_your_cluster_name
 kubectl get nodes
 ```
 
-## Load balancer:-
-```
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
-kubectl --namespace default get services -o wide -w nginx-ingress-ingress-nginx-controller
-```
 ## Implement SSL
 1. Objtain SSL certificate (private.key, certificate.crt)
 2. Convert the SSL certificate into the yaml file:-
@@ -141,6 +134,14 @@ kubectl create secret tls linuxhunter-tls --key private.key --cert certificate.c
 ```
 
 3. If you have not created the YAML file for the SSL then remove the ssl-apply.yml from the kustomization.yaml file.
+
+## Load balancer:-
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
+kubectl --namespace default get services -o wide -w nginx-ingress-ingress-nginx-controller
+```
 
 ## To Deploy kubernetes Project
 ```
